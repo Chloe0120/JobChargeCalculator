@@ -1,27 +1,29 @@
 # Chloe Chin 13COS
-# 10th Oct 2022
-# Version 1 - Calculator page (main) GUI skeleton
+# 12th Oct 2022
+# Version 2 - Storing inputs in a class
 
 from tkinter import *
 from functools import partial
 import random
 from PIL import ImageTk, Image
 
-class job_information:
+class Job:
+
+    # Storing gathered data
     def __init__(self, job_number, customer_name, distance_travelled,
-                 time_spent, wof_and_tune, job_charge):
+                 time_spent, wof_and_tune):
         self.job_number = job_number
         self.customer_name = customer_name
         self.distance_travelled = distance_travelled
         self.time_spent = time_spent
         self.wof_and_tune = wof_and_tune
-        self.job_charge = job_charge
 
 class Calculator:
     def __init__(self):
 
         # Formatting variables
         background_color = "gray92"
+        self.job_history = []
 
         # Calculator Frame
         self.calculator_frame = Frame(bg=background_color,
@@ -101,13 +103,15 @@ class Calculator:
                                         text="WOF and tune service was required :",
                                         font="Arial 14")
         self.wof_and_tune_label.grid(row=0, column=0, padx=10)
-        self.wof_and_tune_checkbutton = Checkbutton(self.wof_and_tune_frame)
+        self.wofBoolean = BooleanVar(False)
+        self.wof_and_tune_checkbutton = Checkbutton(self.wof_and_tune_frame, variable=self.wofBoolean)
         self.wof_and_tune_checkbutton.grid(row=0, column=1)
 
         # Submit button (row 7), orchid3, khaki1
         self.to_submit_button = Button(self.calculator_frame,
                                        text="Submit", font="Arial 12 bold",
-                                       bg="Khaki1", padx=10, pady=10)
+                                       bg="Khaki1", padx=10, pady=10,
+                                       command=lambda: self.submit())
         self.to_submit_button.grid(row=7, pady=10)
 
         # Job Charge label (row 8)
@@ -122,9 +126,18 @@ class Calculator:
                                        padx=10, pady=10)
         self.calc_hist_button.grid(row=9, pady=10)
 
+    def submit(self):
 
+        # Store job instance,
+        job = Job(self.job_number_entry.get(),
+                  self.customer_name_entry.get(),
+                  self.distance_travelled_entry.get(),
+                  self.minutes_spent_entry.get(),
+                  self.wofBoolean.get()
+                  )
 
-
+        # Store job instance to list
+        self.job_history.append(job)
 
 
 
