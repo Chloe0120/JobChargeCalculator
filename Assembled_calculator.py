@@ -1,6 +1,6 @@
 # Chloe Chin 13COS
 # 12th Oct 2022
-# Version 2 - Storing inputs in a class
+# Version 3 - Calculation for total job charge
 
 from tkinter import *
 from functools import partial
@@ -14,9 +14,36 @@ class Job:
                  time_spent, wof_and_tune):
         self.job_number = job_number
         self.customer_name = customer_name
-        self.distance_travelled = distance_travelled
+        self.distance_travelled = round(distance_travelled)
         self.time_spent = time_spent
         self.wof_and_tune = wof_and_tune
+        self.job_charge = None
+        self.calculation()
+
+    def calculation(self):
+
+        # Calculating travel fee
+
+        # If distance travelled to customer is within 5km
+        if self.distance_travelled <= 5 :
+            travel_fee = 10
+        # If distance travelled to customer is over 5km
+        else:
+            travel_fee = (self.distance_travelled - 5) * 0.5 + 10
+
+        # Calculating service fee
+
+        # If provided service is Virus Protection Service
+        if not self.wof_and_tune:
+            service_fee = self.time_spent * 0.8
+        # If provided service is WOF and tune service
+        else:
+            service_fee = 100
+
+        # Calculating total job charge
+        self.job_charge = travel_fee + service_fee
+
+
 
 class Calculator:
     def __init__(self):
@@ -129,16 +156,15 @@ class Calculator:
     def submit(self):
 
         # Store job instance,
-        job = Job(self.job_number_entry.get(),
+        job = Job(int(self.job_number_entry.get()),
                   self.customer_name_entry.get(),
-                  self.distance_travelled_entry.get(),
-                  self.minutes_spent_entry.get(),
+                  float(self.distance_travelled_entry.get()),
+                  int(self.minutes_spent_entry.get()),
                   self.wofBoolean.get()
                   )
 
         # Store job instance to list
         self.job_history.append(job)
-
 
 
 if __name__ == "__main__":
