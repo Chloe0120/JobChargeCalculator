@@ -59,7 +59,7 @@ class Calculator:
 
         # Formatting variables
         background_color = "gray92"
-        self.job_history = []
+        self.job_list = []
 
         # Calculator Frame
         self.calculator_frame = Frame(bg=background_color,
@@ -156,11 +156,16 @@ class Calculator:
                                       pady=10, text="Total job charge ($) : ")
         self.job_charge_label.grid(row=8, column=0)
 
-        # History / Help button frame (row 9)
-        self.calc_hist_button = Button(self.calculator_frame, font="Arial 12 bold",
-                                       text="Calculation History",
-                                       padx=10, pady=10)
-        self.calc_hist_button.grid(row=9, pady=10)
+        # History(Show All Jobs) button frame (row 9)
+        self.history_button = Button(self.calculator_frame, font="Arial 12 bold",
+                                     text="Show All Jobs", padx=10, pady=10,
+                                     command=lambda: self.history(self.job_list))
+        self.history_button.grid(row=9, pady=10)
+
+        if len(self.job_list) == 0:
+            self.history_button.config(state=DISABLED)
+        else:
+            self.history_button.config(state=NORMAL)
 
     def submit(self):
 
@@ -173,9 +178,11 @@ class Calculator:
                   )
 
         # Store job instance to list
-        self.job_history.append(job)
-        # print(self.job_history[-1].job_number, 'job charge: ', self.job_history[-1].job_charge)
+        self.job_list.append(job)
+        # print(self.job_list[-1].job_number, 'job charge: ', self.job_list[-1].job_charge)
 
+    def history(self, job_history):
+        print("History class called")
 
 if __name__ == "__main__":
     root = Tk()
