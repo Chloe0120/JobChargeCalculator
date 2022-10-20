@@ -1,9 +1,10 @@
 # Chloe Chin 13COS
 # 13th Oct 2022
-# Version 4 - Make history button functional
+# Version 5 - Create history GUI frame
 
 from tkinter import *
 from functools import partial
+import re
 import random
 from PIL import ImageTk, Image
 
@@ -59,7 +60,7 @@ class Calculator:
     def __init__(self):
 
         # Formatting variables
-        background_color = "gray92"
+        background_color = "grey92"
         self.job_list = []
 
         # Calculator Frame
@@ -73,95 +74,92 @@ class Calculator:
         self.business_logo_image = ImageTk.PhotoImage(self.image)
         self.business_logo_label = Label(self.calculator_frame,
                                          image=self.business_logo_image)
-        self.business_logo_label.grid(row=0, padx=20, pady=10)
+        self.business_logo_label.grid(row=0, padx=20, pady=(10, 0))
 
         # User instructions (row 1)
         self.instructions_label = Label(self.calculator_frame,
                                         text="User instructions",
                                         font="Arial 10 italic",
                                         justify=LEFT, bg=background_color,
-                                        padx=10, pady=10)
+                                        padx=10, pady=30)
         self.instructions_label.grid(row=1)
 
-        # Job number entry box (row 2)
-        self.job_number_frame = Frame(self.calculator_frame,
-                                      bg=background_color)
-        self.job_number_frame.grid(row=2, pady=10)
-        self.job_number_label = Label(self.job_number_frame,
+        # Set up entries frame (row 2)
+        self.entries_frame = Frame(self.calculator_frame, bg=background_color)
+        self.entries_frame.grid(row=2)
+
+        # Job number entry box
+        self.job_number_label = Label(self.entries_frame,
                                       bg=background_color,
                                       text="Job number :",
                                       font="Arial 14")
-        self.job_number_label.grid(row=0, column=0, padx=10)
-        self.job_number_entry = Entry(self.job_number_frame)
-        self.job_number_entry.grid(row=0, column=1)
+        self.job_number_label.grid(row=0, column=0, padx=20, sticky=NE)
+        self.job_number_entry = Entry(self.entries_frame,
+                                      highlightbackground=background_color)
+        self.job_number_entry.grid(row=0, column=1, padx=20)
 
-        # Customer name entry box (row 3)
-        self.customer_name_frame = Frame(self.calculator_frame,
-                                         bg=background_color)
-        self.customer_name_frame.grid(row=3, pady=10)
-        self.customer_name_label = Label(self.customer_name_frame,
+        # Customer name entry box
+        self.customer_name_label = Label(self.entries_frame,
                                          bg=background_color,
                                          text="Customer name :",
                                          font="Arial 14")
-        self.customer_name_label.grid(row=0, column=0, padx=10)
-        self.customer_name_entry = Entry(self.customer_name_frame)
-        self.customer_name_entry.grid(row=0, column=1)
+        self.customer_name_label.grid(row=1, column=0, padx=20, sticky=NE)
+        self.customer_name_entry = Entry(self.entries_frame,
+                                         highlightbackground=background_color)
+        self.customer_name_entry.grid(row=1, column=1, padx=20)
 
-        # Distance travelled entry box (row 4)
-        self.distance_travelled_frame = Frame(self.calculator_frame,
-                                              bg=background_color)
-        self.distance_travelled_frame.grid(row=4, pady=10)
-        self.distance_travelled_label = Label(self.distance_travelled_frame,
+        # Distance travelled entry box
+        self.distance_travelled_label = Label(self.entries_frame,
                                               bg=background_color,
                                               text="Distance travelled :",
                                               font="Arial 14")
-        self.distance_travelled_label.grid(row=0, column=0, padx=10)
-        self.distance_travelled_entry = Entry(self.distance_travelled_frame)
-        self.distance_travelled_entry.grid(row=0, column=1)
+        self.distance_travelled_label.grid(row=2, column=0, padx=20, sticky=NE)
+        self.distance_travelled_entry = Entry(self.entries_frame,
+                                              highlightbackground=background_color)
+        self.distance_travelled_entry.grid(row=2, column=1, padx=20)
 
-        # Minutes spent on virus protection entry box (row 5)
-        self.minutes_spent_frame = Frame(self.calculator_frame,
-                                         bg=background_color)
-        self.minutes_spent_frame.grid(row=5, pady=10)
-        self.minutes_spent_label = Label(self.minutes_spent_frame,
+        # Minutes spent on virus protection entry box
+        self.minutes_spent_label = Label(self.entries_frame,
                                          bg=background_color,
-                                         text="Minutes spent on virus protection :",
+                                         text="Minutes spent :",
                                          font="Arial 14")
-        self.minutes_spent_label.grid(row=0, column=0, padx=10)
-        self.minutes_spent_entry = Entry(self.minutes_spent_frame)
-        self.minutes_spent_entry.grid(row=0, column=1, padx=(0, 10))
+        self.minutes_spent_label.grid(row=3, column=0, padx=20, sticky=NE)
+        self.minutes_spent_entry = Entry(self.entries_frame,
+                                         highlightbackground=background_color)
+        self.minutes_spent_entry.grid(row=3, column=1, padx=20)
 
-        # WOF and tune checkbox (row 6)
-        self.wof_and_tune_frame = Frame(self.calculator_frame,
-                                        bg=background_color)
-        self.wof_and_tune_frame.grid(row=6, pady=10)
-        self.wof_and_tune_label = Label(self.wof_and_tune_frame,
+        # WOF and tune checkbox
+        self.wof_and_tune_label = Label(self.entries_frame,
                                         bg=background_color,
-                                        text="WOF and tune service was required :",
+                                        text="WOF and tune service :",
                                         font="Arial 14")
-        self.wof_and_tune_label.grid(row=0, column=0, padx=10)
+        self.wof_and_tune_label.grid(row=4, column=0, padx=20, pady=(30,0), sticky=E)
         self.wofBoolean = BooleanVar(False)
-        self.wof_and_tune_checkbutton = Checkbutton(self.wof_and_tune_frame, variable=self.wofBoolean)
-        self.wof_and_tune_checkbutton.grid(row=0, column=1)
+        self.wof_and_tune_checkbutton = Checkbutton(self.entries_frame,
+                                                    variable=self.wofBoolean,
+                                                    bg=background_color)
+        self.wof_and_tune_checkbutton.grid(row=4, column=1, padx=20, pady=(30,0))
 
         # Submit button (row 7), orchid3, khaki1
         self.to_submit_button = Button(self.calculator_frame,
                                        text="Submit", font="Arial 12 bold",
                                        bg="Khaki1", padx=10, pady=10,
+                                       highlightbackground=background_color,
                                        command=lambda: self.submit())
-        self.to_submit_button.grid(row=7, pady=10)
+        self.to_submit_button.grid(row=7, pady=30)
 
         # Job Charge label (row 8)
         self.job_charge_label = Label(self.calculator_frame, font="Arial 14 bold",
                                       bg=background_color, fg="RoyalBlue3",
-                                      pady=10, text="Total job charge ($) : ")
+                                      text="Total job charge ($) : ")
         self.job_charge_label.grid(row=8, column=0)
 
         # History(Show All Jobs) button frame (row 9)
         self.history_button = Button(self.calculator_frame, font="Arial 12 bold",
                                      text="Show All Jobs", padx=10, pady=10,
+                                     highlightbackground=background_color,
                                      command=lambda: self.history(self.job_list))
-        self.history_button.grid(row=9, pady=10)
+        self.history_button.grid(row=9, pady=30)
 
         if len(self.job_list) == 0:
             self.history_button.config(state=DISABLED)
@@ -183,8 +181,6 @@ class Calculator:
         if len(self.job_list) > 0:
             self.history_button.config(state=NORMAL)
 
-        # print(self.job_list[-1].job_number, 'job charge: ', self.job_list[-1].job_charge)
-
     def history(self, job_history):
         History(self, job_history)
 
@@ -201,6 +197,85 @@ class History:
         # If users press cross at top, closes history and 'releases' history button
         self.history_window.protocol('WM_DELETE_WINDOW',
                                      partial(self.close_history, partner))
+
+        # Set up variables
+        background_color = "grey92"
+
+        # Set up history GUI frame
+        self.history_frame = Frame(self.history_window, width=500,
+                                   bg=background_color)
+        self.history_frame.grid()
+        #self.history_frame.place(relx=0.5, anchor=N)
+
+        # Set up heading label (row 0)
+        self.history_heading = Label(self.history_frame, text="Job history",
+                                     font="arial 16 bold",
+                                     bg=background_color)
+        self.history_heading.grid(row=0, pady=(20, 10))
+
+        # history instruction label (row 1)
+        self.history_instruction = Label(self.history_frame,
+                                         text="Here is your calculation history. "
+                                              "you can use the next / previous button to "
+                                              "move on to next / previous job information",
+                                         wraplength=250,
+                                         font="arial 12 italic",
+                                         justify=LEFT, bg=background_color,
+                                         padx=20, pady=10)
+        self.history_instruction.grid(row=1)
+
+        # Set variables for history output frame
+        output_background_color = "white"
+
+        # Set history output frame (row 2)
+        self.history_output_frame = Frame(self.history_frame, bg=output_background_color)
+        self.history_output_frame.grid(row=2, pady=20)
+
+        # Set history output label
+        self.job_number_label = Label(self.history_output_frame, text="Job number :",
+                                      bg=output_background_color)
+        self.job_number_label.grid(row=0, column=0, padx=20, pady=10, sticky=NW)
+
+        self.customer_name_label = Label(self.history_output_frame, text="Customer name :",
+                                         bg=output_background_color)
+        self.customer_name_label.grid(row=1, column=0, padx=20, pady=10, sticky=NW)
+
+        self.job_charge_label = Label(self.history_output_frame, text="Job charge :",
+                                      bg=output_background_color)
+        self.job_charge_label.grid(row=2, column=0, padx=20, pady=10, sticky=NW)
+
+        # Display history output
+        self.job_number_output = Label(self.history_output_frame, text="job number",
+                                       bg=output_background_color)
+        self.job_number_output.grid(row=0, column=1, padx=20, pady=10, sticky=NW)
+
+        self.customer_name_output = Label(self.history_output_frame, text="customer name",
+                                          bg=output_background_color)
+        self.customer_name_output.grid(row=1, column=1, padx=20, pady=10, sticky=NW)
+
+        self.job_charge_output = Label(self.history_output_frame, text="job charge",
+                                       bg=output_background_color)
+        self.job_charge_output.grid(row=2, column=1, padx=20, pady=10, sticky=NW)
+
+        #self.job_list[-1].job_number, 'job charge: ', self.job_list[-1].job_charge
+
+        # Next / Previous button (row 3)
+        self.next_previous_frame = Frame(self.history_frame, bg=background_color)
+        self.next_previous_frame.grid(row=3, pady=20)
+
+        # Next button
+        self.next_button = Button(self.next_previous_frame, text="Next",
+                                  font="Arial 12 bold",
+                                  highlightbackground=background_color,
+                                  padx=10, pady=10, width=10)
+        self.next_button.grid(row=0, column=0, padx=(20, 80))
+
+        # Previous button
+        self.previous_button = Button(self.next_previous_frame, text="Previous",
+                                      font="Arial 12 bold",
+                                      highlightbackground=background_color,
+                                      padx=10, pady=10, width=10)
+        self.previous_button.grid(row=0, column=1, padx=(80,20))
 
     def close_history(self, partner):
         # Enable history button and close the history window
