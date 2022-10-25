@@ -1,6 +1,6 @@
 # Chloe Chin 13COS
 # 20th Oct 2022
-# Version 7 - Input types error handling
+# Version 8 - Add instructions on main & history page
 
 from tkinter import *
 from functools import partial
@@ -73,9 +73,16 @@ class Calculator:
 
         # User instructions (row 1)
         self.instructions_label = Label(self.calculator_frame,
-                                        text="User instructions",
-                                        font="Arial 10 italic",
-                                        justify=LEFT, bg=background_color,
+                                        text="Type in the job number, customer name, "
+                                             "distance travelled to the customer, "
+                                             "minutes spent on the virus protection. "
+                                             "Tick the checkbox if general WOF and tune "
+                                             "service was required. When finished, click "
+                                             "the 'submit' button below to calculate "
+                                             "the total charge for the job.",
+                                        font="Arial 13 italic",
+                                        wraplength=450,
+                                        justify=CENTER, bg=background_color,
                                         padx=10, pady=30)
         self.instructions_label.grid(row=1)
 
@@ -236,12 +243,12 @@ class History:
 
         # history instruction label (row 1)
         self.history_instruction = Label(self.history_frame,
-                                         text="Here is your calculation history. "
-                                              "you can use the next / previous button to "
-                                              "move on to next / previous job information",
+                                         text="Here is your calculation history.\n"
+                                              "Click the previous button to display older data.\n"
+                                              "Click the next button to display more recent data.",
                                          wraplength=250,
                                          font="arial 12 italic",
-                                         justify=LEFT, bg=background_color,
+                                         justify=CENTER, bg=background_color,
                                          padx=20, pady=10)
         self.history_instruction.grid(row=1)
 
