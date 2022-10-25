@@ -1,5 +1,5 @@
 # Chloe Chin 13COS
-# 20th Oct 2022
+# 25th Oct 2022
 # Version 7 - Input types error handling
 
 from tkinter import *
@@ -161,6 +161,8 @@ class Calculator:
 
     def submit(self):
 
+        error_background = "#ffafaf"  # Pale pink background for when entry box has errors
+
         # Handle errors for variables that requires specific value
         try:
             # If job number value isn't int:
@@ -195,7 +197,7 @@ class Calculator:
                                          fg="RoyalBlue3")
 
         except ValueError:
-            error_message = "Invalid input: please enter a {} for {}.".format(value_to_enter, raised_by)
+            error_message = "Error: please enter a {} for {}.".format(value_to_enter, raised_by)
             self.job_charge_label.config(text=error_message, fg="red")
             self.to_submit_button.config()
 
