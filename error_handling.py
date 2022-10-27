@@ -1,11 +1,9 @@
 # Chloe Chin 13COS
-# 25th Oct 2022
-# Version 7 - Input types error handling
+# 28th Oct 2022
+# Version 9 - Add error handling function in Calculator class. Handle boundary errors.
 
 from tkinter import *
 from functools import partial
-import re
-import random
 from PIL import ImageTk, Image
 
 
@@ -73,9 +71,14 @@ class Calculator:
 
         # User instructions (row 1)
         self.instructions_label = Label(self.calculator_frame,
-                                        text="User instructions",
-                                        font="Arial 10 italic",
-                                        justify=LEFT, bg=background_color,
+                                        text="Type in the job information.\n"
+                                             "Click the 'submit' button below to calculate "
+                                             "the total charge for the job.\n"
+                                             "'Show All Jobs' button will display all the "
+                                             "past jobs you've done.",
+                                        font="Arial 13 italic",
+                                        wraplength=450,
+                                        justify=CENTER, bg=background_color,
                                         padx=10, pady=30)
         self.instructions_label.grid(row=1)
 
@@ -106,7 +109,7 @@ class Calculator:
         # Distance travelled entry box
         self.distance_travelled_label = Label(self.entries_frame,
                                               bg=background_color,
-                                              text="Distance travelled :",
+                                              text="Distance travelled (km) :",
                                               font="Arial 14")
         self.distance_travelled_label.grid(row=2, column=0, padx=20, sticky=NE)
         self.distance_travelled_entry = Entry(self.entries_frame,
@@ -129,88 +132,96 @@ class Calculator:
                                         text="WOF and tune service :",
                                         font="Arial 14")
         self.wof_and_tune_label.grid(row=4, column=0, padx=20, pady=(30, 0), sticky=E)
-        self.wofBoolean = BooleanVar(False)
+        self.wofBoolean = BooleanVar()
         self.wof_and_tune_checkbutton = Checkbutton(self.entries_frame,
                                                     variable=self.wofBoolean,
                                                     bg=background_color)
         self.wof_and_tune_checkbutton.grid(row=4, column=1, padx=20, pady=(30, 0))
 
-        # Submit button (row 7), orchid3, khaki1
+        # Submit button (row 3), orchid3, khaki1
         self.to_submit_button = Button(self.calculator_frame,
                                        text="Submit", font="Arial 12 bold",
                                        bg="Khaki1", padx=10, pady=10,
                                        highlightbackground=background_color,
-                                       command=lambda: self.submit())
-        self.to_submit_button.grid(row=7, pady=30)
+                                       command=lambda: self.check_error())
+        self.to_submit_button.grid(row=3, pady=30)
 
-        # Job Charge label (row 8)
-        self.job_charge_label = Label(self.calculator_frame, font="Arial 14 bold",
-                                      bg=background_color, fg="RoyalBlue3",
-                                      text="Total job charge ($) : ")
-        self.job_charge_label.grid(row=8, column=0)
+        # Job Charge label (row 4)
+        self.output_label = Label(self.calculator_frame, font="Arial 14 bold",
+                                  bg=background_color, fg="RoyalBlue3",
+                                  text="Total job charge ($) : ")
+        self.output_label.grid(row=4, column=0)
 
-        # History(Show All Jobs) button frame (row 9)
+        # History(Show All Jobs) button frame (row 5)
         self.history_button = Button(self.calculator_frame, font="Arial 12 bold",
                                      text="Show All Jobs", padx=10, pady=10,
                                      highlightbackground=background_color,
-                                     command=lambda: self.history(self.job_list))
-        self.history_button.grid(row=9, pady=30)
+                                     command=lambda: self.history())
+        self.history_button.grid(row=5, pady=30)
 
         if len(self.job_list) == 0:
             self.history_button.config(state=DISABLED)
 
-    def submit(self):
+    def check_error(self):
 
-        error_background = "#ffafaf"  # Pale pink background for when entry box has errors
+        # Set up error message variable; This message will change depending on which input variable is causing error.
+        error_message = ""
 
         # Handle errors for variables that requires specific value
         try:
             # If job number value isn't int:
-            value_to_enter = "whole number"
-            raised_by = "job number"
-            int(self.job_number_entry.get())
-
-            # If distance travelled value isn't float:
-            value_to_enter = "number"
-            raised_by = "distance travelled"
-            float(self.distance_travelled_entry.get())
-
-            # If minutes spent value isn't int:
-            value_to_enter = "whole number"
-            raised_by = "minutes spent"
-            int(self.minutes_spent_entry.get())
-
-            # No error, moves on to store data
-
-            # Store job instance:
-            job = Job(int(self.job_number_entry.get()),
-                      self.customer_name_entry.get(),
-                      float(self.distance_travelled_entry.get()),
-                      int(self.minutes_spent_entry.get()),
-                      self.wofBoolean.get())
-
-            # Store job instance to list
-            self.job_list.append(job)
-
-            # Configurate job charge label to display correct value
-            self.job_charge_label.config(text="Total job charge ($) : " + str(self.job_list[-1].job_charge),
-                                         fg="RoyalBlue3")
+            error_message = "Invalid input: please enter a whole number for job number."
+            # If job number value is out of boundary:
+            if int(self.job_number_entry.get().replace(" ", "")) <= 0:
+                error_message = "Job number must be 1 or higher!"
+                self.output_label.config(text=error_message, fg="red")
+            else:
+                # If distance travelled value isn't float:
+                error_message = "Invalid input: please enter a number for distance travelled."
+                # If distance travelled value is out of boundary:
+                if float(self.distance_travelled_entry.get().replace(" ", "")) < 0:
+                    error_message = "Distance travelled must be 0 or higher!"
+                    self.output_label.config(text=error_message, fg="red")
+                else:
+                    # If minutes spent value isn't int:
+                    error_message = "Invalid input: please enter a whole number for minutes spent."
+                    # If minutes spent value is out of boundary:
+                    if int(self.minutes_spent_entry.get().replace(" ", "")) < 0:
+                        error_message = "Minutes spent must be 0 or higher!"
+                        self.output_label.config(text=error_message, fg="red")
+                    else:
+                        # No error, call submit function to store the data
+                        self.submit()
 
         except ValueError:
-            error_message = "Error: please enter a {} for {}.".format(value_to_enter, raised_by)
-            self.job_charge_label.config(text=error_message, fg="red")
-            self.to_submit_button.config()
+            self.output_label.config(text=error_message, fg="red")
+
+    def submit(self):
+
+        # Store job instance:
+        job = Job(int(self.job_number_entry.get().replace(" ", "")),
+                  self.customer_name_entry.get().strip(),
+                  float(self.distance_travelled_entry.get().replace(" ", "")),
+                  int(self.minutes_spent_entry.get().replace(" ", "")),
+                  self.wofBoolean.get())
+
+        # Store Job class to list
+        self.job_list.append(job)
+
+        # Configurate job charge label to display correct value
+        self.output_label.config(text="Total job charge ($) : " + str(self.job_list[-1].job_charge),
+                                 fg="RoyalBlue3")
 
         # Enable history button when job list is appended
         if len(self.job_list) > 0:
             self.history_button.config(state=NORMAL)
 
-    def history(self, job_list):
-        History(self, job_list)
+    def history(self):
+        History(self)
 
 
 class History:
-    def __init__(self, partner, job_list):
+    def __init__(self, partner):
 
         # disable history button when history window is activated
         partner.history_button.config(state=DISABLED)
@@ -238,12 +249,12 @@ class History:
 
         # history instruction label (row 1)
         self.history_instruction = Label(self.history_frame,
-                                         text="Here is your calculation history. "
-                                              "you can use the next / previous button to "
-                                              "move on to next / previous job information",
+                                         text="Here is your calculation history.\n"
+                                              "Click the previous button to display older data.\n"
+                                              "Click the next button to display more recent data.",
                                          wraplength=250,
                                          font="arial 12 italic",
-                                         justify=LEFT, bg=background_color,
+                                         justify=CENTER, bg=background_color,
                                          padx=20, pady=10)
         self.history_instruction.grid(row=1)
 
@@ -255,7 +266,7 @@ class History:
         self.history_output_frame = Frame(self.history_frame, bg=output_background_color)
         self.history_output_frame.grid(row=2, pady=20)
 
-        # Set history output label
+        # Display output labels
         self.job_number_label = Label(self.history_output_frame, text="Job number :",
                                       bg=output_background_color)
         self.job_number_label.grid(row=0, column=0, padx=20, pady=10, sticky=NW)
@@ -268,10 +279,7 @@ class History:
                                       bg=output_background_color)
         self.job_charge_label.grid(row=2, column=0, padx=20, pady=10, sticky=NW)
 
-        # Call function to display history output
-
-        #self.job_number = partner.job_list[self.current_index].job_number
-
+        # Display output values
         self.job_number_output = Label(self.history_output_frame,
                                        text=partner.job_list[self.current_index].job_number,
                                        bg=output_background_color)
