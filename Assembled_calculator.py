@@ -1,6 +1,6 @@
 # Chloe Chin 13COS
 # 30th Oct 2022
-# Version 11 (Final) - Add docstrings & comments where needed
+# Hotfix - Fixing rounding issue
 
 from tkinter import *
 from functools import partial
@@ -28,7 +28,9 @@ class Job:
         """
         self.job_number = job_number
         self.customer_name = customer_name
-        self.distance_travelled = round(distance_travelled)
+        # Python rounds 0.5 to 0, therefore to prevent this issue I added 0.01
+        self.distance_travelled = round(distance_travelled + 0.01)
+        print(self.distance_travelled)
         self.time_spent = time_spent
         self.wof_and_tune = wof_and_tune
         self.job_charge = None
