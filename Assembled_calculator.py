@@ -1,6 +1,6 @@
 # Chloe Chin 13COS
-# 28th Oct 2022
-# Version 9 - Add error handling function in Calculator class. Handle boundary errors.
+# 29th Oct 2022
+# Version 10 - Prevent job number duplication
 
 from tkinter import *
 from functools import partial
@@ -165,6 +165,7 @@ class Calculator:
     def check_error(self):
 
         # Set up error message variable; This message will change depending on which input variable is causing error.
+        job_number_duplication = False
         error_message = ""
 
         # Handle errors for variables that requires specific value
@@ -190,8 +191,16 @@ class Calculator:
                         error_message = "Minutes spent must be 0 or higher!"
                         self.output_label.config(text=error_message, fg="red")
                     else:
-                        # No error, call submit function to store the data
-                        self.submit()
+                        for i in range(len(self.job_list)):
+                            job_number_duplication = False
+                            if int(self.job_number_entry.get().replace(" ", "")) == self.job_list[i].job_number:
+                                error_message = "This job number has already been entered!"
+                                self.output_label.config(text=error_message, fg="red")
+                                job_number_duplication = True
+                                break
+                        if not job_number_duplication:
+                            # No error, call submit function to store the data
+                            self.submit()
 
         except ValueError:
             self.output_label.config(text=error_message, fg="red")
@@ -321,18 +330,20 @@ class History:
         self.check_button_state(partner)
 
     def check_button_state(self, partner):
-        # Disable both buttons if there's only one item
-        if self.current_index + len(partner.job_list) == 0 and self.current_index == -1:
+        # Disable both buttons if there's only one item in the list
+        if len(partner.job_list) == 1:
             self.previous_button.config(state=DISABLED)
             self.next_button.config(state=DISABLED)
             print(self.current_index)
         # Disable previous button if there's no more previous data
         elif self.current_index + len(partner.job_list) == 0:
             self.previous_button.config(state=DISABLED)
+            self.next_button.config(state=NORMAL)
             print("1")
         # Disable next button if there's no more recent data
         elif self.current_index == -1:
             self.next_button.config(state=DISABLED)
+            self.previous_button.config(state=NORMAL)
             print("2")
         # Enable both buttons
         else:
