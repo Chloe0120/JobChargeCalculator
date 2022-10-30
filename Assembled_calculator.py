@@ -1,6 +1,6 @@
 # Chloe Chin 13COS
 # 29th Oct 2022
-# Version 10 - Prevent job number duplication
+# Job number automation trialling
 
 from tkinter import *
 from functools import partial
