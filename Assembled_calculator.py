@@ -1,6 +1,6 @@
 # Chloe Chin 13COS
-# 29th Oct 2022
-# Version 10 - Prevent job number duplication
+# 30th Oct 2022
+# Version 11 (Final) - Add docstrings & comments where needed
 
 from tkinter import *
 from functools import partial
@@ -12,6 +12,20 @@ class Job:
     # Storing gathered data
     def __init__(self, job_number, customer_name, distance_travelled,
                  time_spent, wof_and_tune):
+        """
+        Constructor of class Job. Stores all information of one job, gets stored in a list.
+        Initialises before accepting every new job information.
+
+        Parameters :
+            job number : int
+            customer name : str
+            distance travelled : float
+            minutes spent : int
+            WOF and tune : Boolean
+
+        Returns :
+            None
+        """
         self.job_number = job_number
         self.customer_name = customer_name
         self.distance_travelled = round(distance_travelled)
@@ -21,7 +35,15 @@ class Job:
         self.calculation()
 
     def calculation(self):
+        """
+        Calculates the job charge.
 
+        Parameters :
+            None
+
+        Returns :
+            None (uses member variables)
+        """
         # Calculating travel fee
         # If distance travelled to customer is within 5km
         if self.distance_travelled <= 5:
@@ -51,7 +73,15 @@ class Job:
 class Calculator:
 
     def __init__(self):
+        """
+        Constructor of class Calculator. Creates GUI of the Calculator window.
 
+        Parameter :
+            None
+
+        Returns :
+            None
+        """
         # Formatting variables
         background_color = "grey92"
         self.job_list = []
@@ -163,7 +193,15 @@ class Calculator:
             self.history_button.config(state=DISABLED)
 
     def check_error(self):
+        """
+        Checks if the inputs are valid and within boundary. If not, displays appropriate error message. If all inputs are valid and within boundary, calls function submit()
 
+        Parameter :
+            None
+
+        Returns :
+            None
+        """
         # Set up error message variable; This message will change depending on which input variable is causing error.
         job_number_duplication = False
         error_message = ""
@@ -206,7 +244,15 @@ class Calculator:
             self.output_label.config(text=error_message, fg="red")
 
     def submit(self):
+        """
+        Stores the current inputs into class Job as instances. Stores the class in a list.
 
+        Parameter :
+            None
+
+        Returns :
+            None
+        """
         # Store job instance:
         job = Job(int(self.job_number_entry.get().replace(" ", "")),
                   self.customer_name_entry.get().strip(),
@@ -226,12 +272,29 @@ class Calculator:
             self.history_button.config(state=NORMAL)
 
     def history(self):
+        """
+        Calls the class History.
+
+        Parameters :
+            None
+
+        Returns :
+            None
+        """
         History(self)
 
 
 class History:
     def __init__(self, partner):
+        """
+        Constructor of class History. Creates GUI of the History window.
 
+        Parameter :
+            Partner : Enables bringing class variable from partner class Calculator
+
+        Returns :
+            None
+        """
         # disable history button when history window is activated
         partner.history_button.config(state=DISABLED)
 
@@ -330,6 +393,15 @@ class History:
         self.check_button_state(partner)
 
     def check_button_state(self, partner):
+        """
+        Checks the button state of the next and previous buttons. Enables & disables them when necessary.
+
+        Parameter :
+            Partner : Enables bringing class variable from partner class Calculator
+
+        Returns :
+            None
+        """
         # Disable both buttons if there's only one item in the list
         if len(partner.job_list) == 1:
             self.previous_button.config(state=DISABLED)
@@ -352,6 +424,16 @@ class History:
             print("3")
 
     def set_displayed_data(self, partner, navigate_to):
+        """
+        Switches the displayed data to next / previous data when next / previous button is clicked.
+
+        Parameter :
+            Partner : Enables bringing class variable from partner class Calculator
+            navigate_to : Gives information whether the data must be switched to the next or the previous one.
+
+        Returns :
+            None
+        """
         if navigate_to == "previous":
             self.current_index -= 1
         else:
@@ -363,6 +445,15 @@ class History:
         self.check_button_state(partner)
 
     def close_history(self, partner):
+        """
+        Closes the history window when the top cross button is pressed.
+
+        Parameter :
+            Partner : Enables bringing class variable from partner class Calculator
+
+        Returns :
+            None
+        """
         # Enable history button and close the history window
         partner.history_button.config(state=NORMAL)
         self.history_window.destroy()
