@@ -1,6 +1,6 @@
 # Chloe Chin 13COS
 # 29th Oct 2022
-# Job number automation trialling
+# Job number automation
 
 from tkinter import *
 from functools import partial
@@ -55,6 +55,7 @@ class Calculator:
         # Formatting variables
         background_color = "grey92"
         self.job_list = []
+        self.job_number = 1
 
         # Calculator Frame
         self.calculator_frame = Frame(bg=background_color,
@@ -86,57 +87,47 @@ class Calculator:
         self.entries_frame = Frame(self.calculator_frame, bg=background_color)
         self.entries_frame.grid(row=2)
 
-        # Job number entry box
-        self.job_number_label = Label(self.entries_frame,
-                                      bg=background_color,
-                                      text="Job number :",
-                                      font="Arial 14")
-        self.job_number_label.grid(row=0, column=0, padx=20, sticky=NE)
-        self.job_number_entry = Entry(self.entries_frame,
-                                      highlightbackground=background_color)
-        self.job_number_entry.grid(row=0, column=1, padx=20)
-
         # Customer name entry box
         self.customer_name_label = Label(self.entries_frame,
                                          bg=background_color,
                                          text="Customer name :",
                                          font="Arial 14")
-        self.customer_name_label.grid(row=1, column=0, padx=20, sticky=NE)
+        self.customer_name_label.grid(row=0, column=0, padx=20, sticky=NE)
         self.customer_name_entry = Entry(self.entries_frame,
                                          highlightbackground=background_color)
-        self.customer_name_entry.grid(row=1, column=1, padx=20)
+        self.customer_name_entry.grid(row=0, column=1, padx=20)
 
         # Distance travelled entry box
         self.distance_travelled_label = Label(self.entries_frame,
                                               bg=background_color,
                                               text="Distance travelled (km) :",
                                               font="Arial 14")
-        self.distance_travelled_label.grid(row=2, column=0, padx=20, sticky=NE)
+        self.distance_travelled_label.grid(row=1, column=0, padx=20, sticky=NE)
         self.distance_travelled_entry = Entry(self.entries_frame,
                                               highlightbackground=background_color)
-        self.distance_travelled_entry.grid(row=2, column=1, padx=20)
+        self.distance_travelled_entry.grid(row=1, column=1, padx=20)
 
         # Minutes spent on virus protection entry box
         self.minutes_spent_label = Label(self.entries_frame,
                                          bg=background_color,
                                          text="Minutes spent :",
                                          font="Arial 14")
-        self.minutes_spent_label.grid(row=3, column=0, padx=20, sticky=NE)
+        self.minutes_spent_label.grid(row=2, column=0, padx=20, sticky=NE)
         self.minutes_spent_entry = Entry(self.entries_frame,
                                          highlightbackground=background_color)
-        self.minutes_spent_entry.grid(row=3, column=1, padx=20)
+        self.minutes_spent_entry.grid(row=2, column=1, padx=20)
 
         # WOF and tune checkbox
         self.wof_and_tune_label = Label(self.entries_frame,
                                         bg=background_color,
                                         text="WOF and tune service :",
                                         font="Arial 14")
-        self.wof_and_tune_label.grid(row=4, column=0, padx=20, pady=(30, 0), sticky=E)
+        self.wof_and_tune_label.grid(row=3, column=0, padx=20, pady=(30, 0), sticky=E)
         self.wofBoolean = BooleanVar()
         self.wof_and_tune_checkbutton = Checkbutton(self.entries_frame,
                                                     variable=self.wofBoolean,
                                                     bg=background_color)
-        self.wof_and_tune_checkbutton.grid(row=4, column=1, padx=20, pady=(30, 0))
+        self.wof_and_tune_checkbutton.grid(row=3, column=1, padx=20, pady=(30, 0))
 
         # Submit button (row 3), orchid3, khaki1
         self.to_submit_button = Button(self.calculator_frame,
@@ -170,37 +161,21 @@ class Calculator:
 
         # Handle errors for variables that requires specific value
         try:
-            # If job number value isn't int:
-            error_message = "Invalid input: please enter a whole number for job number."
-            # If job number value is out of boundary:
-            if int(self.job_number_entry.get().replace(" ", "")) <= 0:
-                error_message = "Job number must be 1 or higher!"
+            # If distance travelled value isn't float:
+            error_message = "Invalid input: please enter a number for distance travelled."
+            # If distance travelled value is out of boundary:
+            if float(self.distance_travelled_entry.get().replace(" ", "")) < 0:
+                error_message = "Distance travelled must be 0 or higher!"
                 self.output_label.config(text=error_message, fg="red")
             else:
-                # If distance travelled value isn't float:
-                error_message = "Invalid input: please enter a number for distance travelled."
-                # If distance travelled value is out of boundary:
-                if float(self.distance_travelled_entry.get().replace(" ", "")) < 0:
-                    error_message = "Distance travelled must be 0 or higher!"
+                # If minutes spent value isn't int:
+                error_message = "Invalid input: please enter a whole number for minutes spent."
+                # If minutes spent value is out of boundary:
+                if int(self.minutes_spent_entry.get().replace(" ", "")) < 0:
+                    error_message = "Minutes spent must be 0 or higher!"
                     self.output_label.config(text=error_message, fg="red")
                 else:
-                    # If minutes spent value isn't int:
-                    error_message = "Invalid input: please enter a whole number for minutes spent."
-                    # If minutes spent value is out of boundary:
-                    if int(self.minutes_spent_entry.get().replace(" ", "")) < 0:
-                        error_message = "Minutes spent must be 0 or higher!"
-                        self.output_label.config(text=error_message, fg="red")
-                    else:
-                        for i in range(len(self.job_list)):
-                            job_number_duplication = False
-                            if int(self.job_number_entry.get().replace(" ", "")) == self.job_list[i].job_number:
-                                error_message = "This job number has already been entered!"
-                                self.output_label.config(text=error_message, fg="red")
-                                job_number_duplication = True
-                                break
-                        if not job_number_duplication:
-                            # No error, call submit function to store the data
-                            self.submit()
+                    self.submit()
 
         except ValueError:
             self.output_label.config(text=error_message, fg="red")
@@ -208,11 +183,14 @@ class Calculator:
     def submit(self):
 
         # Store job instance:
-        job = Job(int(self.job_number_entry.get().replace(" ", "")),
+        job = Job(self.job_number,
                   self.customer_name_entry.get().strip(),
                   float(self.distance_travelled_entry.get().replace(" ", "")),
                   int(self.minutes_spent_entry.get().replace(" ", "")),
                   self.wofBoolean.get())
+
+        # Job number + 1
+        self.job_number += 1
 
         # Store Job class to list
         self.job_list.append(job)
